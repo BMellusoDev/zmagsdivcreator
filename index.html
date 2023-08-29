@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zmags Experience Generator</title>
+<style>
+  body {
+    font-family: 'Oswald', sans-serif;
+    color: white;
+    background-color: #41B7AB;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+  h1 {
+    color: white;
+    font-size: 30px;
+  }
+  #experience-form {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+  .input-field {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  #generate-button {
+    background-color: white;
+    color: #41B7AB;
+    font-size: 22px;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  #generate-button:hover {
+    background-color: #41B7AB;
+    color: white;
+  }
+  #result {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    white-space: pre-line;
+    text-align: left;
+    overflow: auto;
+    max-height: 200px;
+  }
+  #copy-button {
+    background-color: white;
+    color: #41B7AB;
+    font-size: 16px;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 5px;
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  #copy-button:hover {
+    background-color: #41B7AB;
+    color: white;
+  }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+<h1>Zmags Experience Generator</h1>
+<form id="experience-form">
+  <label for="css-id">CSS ID:</label>
+  <input class="input-field" type="text" id="css-id" required>
+  <label for="experience-width">Experience Width (Desktop - px):</label>
+  <input class="input-field" type="number" id="experience-width" required>
+  <label for="experience-height">Experience Height (Desktop - px):</label>
+  <input class="input-field" type="number" id="experience-height" required>
+  <label for="tablet-width">Experience Width (Tablet - px):</label>
+  <input class="input-field" type="number" id="tablet-width" required>
+  <label for="tablet-height">Experience Height (Tablet - px):</label>
+  <input class="input-field" type="number" id="tablet-height" required>
+  <label for="mobile-width">Experience Width (Mobile - px):</label>
+  <input class="input-field" type="number" id="mobile-width" required>
+  <label for="mobile-height">Experience Height (Mobile - px):</label>
+  <input class="input-field" type="number" id="mobile-height" required>
+  <button id="generate-button" type="button" onclick="generateCode()">Generate Code</button>
+</form>
+<div id="result" aria-live="polite"></div>
+
+<script>
+function generateCode() {
+  const cssId = document.getElementById('css-id').value;
+  const desktopWidth = parseFloat(document.getElementById('experience-width').value);
+  const desktopHeight = parseFloat(document.getElementById('experience-height').value);
+  const tabletWidth = parseFloat(document.getElementById('tablet-width').value);
+  const tabletHeight = parseFloat(document.getElementById('tablet-height').value);
+  const mobileWidth = parseFloat(document.getElementById('mobile-width').value);
+  const mobileHeight = parseFloat(document.getElementById('mobile-height').value);
+
+  const desktopPaddingPercentage = (desktopHeight / desktopWidth) * 100;
+  const tabletPaddingPercentage = (tabletHeight / tabletWidth) * 100;
+  const mobilePaddingPercentage = (mobileHeight / mobileWidth) * 100;
+
+  const code = `
+#${cssId} {
+  width: 100%;
+  padding-bottom: ${desktopPaddingPercentage.toFixed(2)}%;
+  background-color: white;
+}
+
+@media screen and (max-width: 991px) {
+  #${cssId} {
+    width: 100%;
+    padding-bottom: ${tabletPaddingPercentage.toFixed(2)}%;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  #${cssId} {
+    width: 100%;
+    padding-bottom: ${mobilePaddingPercentage.toFixed(2)}%;
+  }
+}
+`;
+
+  const resultElement = document.getElementById('result');
+  resultElement.textContent = code;
+
+  if (!resultElement.querySelector('#copy-button')) {
+    const copyButton = document.createElement('button');
+    copyButton.id = 'copy-button';
+    copyButton.textContent = 'Copy Code';
+    copyButton.addEventListener('click', copyCode);
+    resultElement.appendChild(copyButton);
+  }
+}
+
+function copyCode() {
+  const codeElement = document.getElementById('result');
+  const code = codeElement.textContent;
+
+  const tempElement = document.createElement('textarea');
+  tempElement.value = code;
+  document.body.appendChild(tempElement);
+  tempElement.select();
+  document.execCommand('copy');
+  document.body.removeChild(tempElement);
+
+  alert('Code copied to clipboard!');
+}
+</script>
+</body>
+</html>
